@@ -54,8 +54,10 @@ export class BabylonEngine {
     // Don't attach controls - we'll handle input manually
     camera.attachControl(this.canvas, false);
 
-    // Allow mouse to rotate camera but not move it
-    camera.inputs.attached.keyboard.detachControl();
+    // Remove keyboard input from camera (we handle it manually)
+    if (camera.inputs.attached['keyboard']) {
+      camera.inputs.remove(camera.inputs.attached['keyboard']);
+    }
 
     return scene;
   }

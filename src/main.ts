@@ -30,7 +30,7 @@ class Application {
     }
 
     // Initialize Babylon.js engine
-    const engineInstance = this.engine.initialize(canvas);
+    this.engine.initialize(canvas);
     console.log('Engine initialized');
 
     // Create scene

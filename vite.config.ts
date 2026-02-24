@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
+  base: '/runabake/',
   resolve: {
     alias: {
       '@domain': resolve(__dirname, './src/domain'),
@@ -19,12 +20,11 @@ export default defineConfig({
     target: 'es2022',
     outDir: 'dist',
     sourcemap: true,
-    minify: 'terser',
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
           babylonjs: ['@babylonjs/core', '@babylonjs/loaders', '@babylonjs/materials', '@babylonjs/gui'],
-          vendor: ['simplex-noise', 'sql.js'],
         },
       },
     },
