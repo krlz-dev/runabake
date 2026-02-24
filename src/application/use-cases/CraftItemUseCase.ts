@@ -1,6 +1,7 @@
 import { Character } from '@domain/entities/Character';
 import { Inventory } from '@domain/entities/Inventory';
 import { Item, ItemType, ItemRarity } from '@domain/entities/Item';
+import { EventBus, GameEventType, ItemCraftedEvent, InventoryChangedEvent } from '@application/events/EventBus';
 
 /**
  * Crafting recipe definition
@@ -33,19 +34,29 @@ export interface ICraftingResult {
 
 /**
  * Use case for crafting items from materials
- * Demonstrates application layer logic coordinating domain entities
  */
 export class CraftItemUseCase {
+  private eventBus: EventBus | null;
+
   constructor(
     private character: Character,
-    private inventory: Inventory
-  ) {}
+    private inventory: Inventory,
+    eventBus?: EventBus
+  ) {
+    this.eventBus = eventBus ?? null;
+  }
+
+  /**
+   * Update character reference (since Character uses immutable updates)
+   */
+  setCharacter(character: Character): void {
+    this.character = character;
+  }
 
   /**
    * Attempt to craft an item using a recipe
    */
   execute(recipe: ICraftingRecipe): ICraftingResult {
-    // Validate character is alive
     if (!this.character.isAlive) {
       return {
         success: false,
@@ -54,8 +65,7 @@ export class CraftItemUseCase {
       };
     }
 
-    // Check if character has enough stamina
-    const staminaCost = recipe.craftingTime * 2; // 2 stamina per second
+    const staminaCost = recipe.craftingTime * 2;
     if (!this.character.canUseStamina(staminaCost)) {
       return {
         success: false,
@@ -64,7 +74,6 @@ export class CraftItemUseCase {
       };
     }
 
-    // Check materials
     const materialsCheck = this.checkMaterials(recipe.requiredMaterials);
     if (!materialsCheck.hasAll) {
       return {
@@ -94,6 +103,18 @@ export class CraftItemUseCase {
       };
     }
 
+    // Publish events
+    if (this.eventBus) {
+      this.eventBus.publish<ItemCraftedEvent>({
+        type: GameEventType.ITEM_CRAFTED,
+        itemId: recipe.resultItem.id,
+        itemName: recipe.name,
+      });
+      this.eventBus.publish<InventoryChangedEvent>({
+        type: GameEventType.INVENTORY_CHANGED,
+      });
+    }
+
     return {
       success: true,
       item: craftedItem,
@@ -101,9 +122,6 @@ export class CraftItemUseCase {
     };
   }
 
-  /**
-   * Check if inventory has all required materials
-   */
   private checkMaterials(requiredMaterials: Map<string, number>): {
     hasAll: boolean;
     missing: Array<{ itemId: string; needed: number; has: number }>;
@@ -123,14 +141,10 @@ export class CraftItemUseCase {
     };
   }
 
-  /**
-   * Consume materials from inventory
-   */
   private consumeMaterials(requiredMaterials: Map<string, number>): void {
     for (const [itemId, quantity] of requiredMaterials) {
       let remaining = quantity;
 
-      // Find and remove items
       for (const slot of this.inventory.getAllSlots()) {
         if (slot.item && slot.item.id === itemId && remaining > 0) {
           const toRemove = Math.min(remaining, slot.item.quantity);
@@ -143,9 +157,6 @@ export class CraftItemUseCase {
     }
   }
 
-  /**
-   * Create the crafted item
-   */
   private createCraftedItem(recipe: ICraftingRecipe): Item {
     return Item.create({
       id: recipe.resultItem.id,
@@ -192,8 +203,7 @@ export class CraftItemUseCase {
 }
 
 /**
- * Example crafting recipes
- * In a real game, these would be loaded from a data file
+ * Crafting recipes registry
  */
 export class CraftingRecipes {
   private static recipes = new Map<string, ICraftingRecipe>([

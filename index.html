@@ -25,6 +25,7 @@
       display: block;
     }
 
+    /* Loading screen */
     #loading {
       position: absolute;
       top: 0;
@@ -58,12 +59,8 @@
     }
 
     @keyframes rotation {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     #loading h1 {
@@ -77,6 +74,7 @@
       opacity: 0.8;
     }
 
+    /* UI Overlay */
     #ui-overlay {
       position: absolute;
       top: 0;
@@ -87,6 +85,7 @@
       z-index: 100;
     }
 
+    /* Stats Panel */
     .stats-panel {
       position: absolute;
       top: 20px;
@@ -137,6 +136,43 @@
       background: linear-gradient(90deg, #44ff44, #66ff66);
     }
 
+    /* Environment HUD */
+    .environment-panel {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      pointer-events: auto;
+      text-align: center;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .env-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .env-label {
+      font-size: 10px;
+      opacity: 0.7;
+      text-transform: uppercase;
+    }
+
+    .env-value {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    /* Info Panel */
     .info-text {
       position: absolute;
       top: 20px;
@@ -147,6 +183,320 @@
       border-radius: 8px;
       font-size: 14px;
       pointer-events: auto;
+    }
+
+    /* Interaction Prompt */
+    #interaction-prompt {
+      position: absolute;
+      bottom: 150px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #ffdd44;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      display: none;
+      pointer-events: none;
+    }
+
+    /* Gather Progress Bar */
+    #gather-progress {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 6px;
+      overflow: hidden;
+      display: none;
+      pointer-events: none;
+    }
+
+    #gather-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #44ff44, #88ff88);
+      border-radius: 6px;
+      transition: width 0.1s linear;
+    }
+
+    /* Gather Feedback */
+    #gather-feedback {
+      position: absolute;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #88ff88;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 0 0 4px rgba(0,0,0,0.8);
+      display: none;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    /* ============================================
+       Game Panels (Inventory, Crafting)
+       ============================================ */
+    .game-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(20, 20, 30, 0.95);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      display: none;
+      pointer-events: auto;
+      z-index: 200;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #ffdd44;
+    }
+
+    /* Inventory Grid */
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-template-rows: repeat(4, 60px);
+      gap: 4px;
+    }
+
+    .inventory-slot {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .inventory-slot:hover {
+      border-color: rgba(255, 221, 68, 0.6);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .inventory-slot.dragging {
+      opacity: 0.4;
+      border-color: #ffdd44;
+    }
+
+    .inventory-slot.drag-over {
+      border-color: #44ff44;
+      background: rgba(68, 255, 68, 0.15);
+    }
+
+    .slot-icon {
+      font-size: 28px;
+    }
+
+    .slot-quantity {
+      position: absolute;
+      bottom: 2px;
+      right: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #ffdd44;
+      text-shadow: 0 0 3px rgba(0,0,0,0.8);
+    }
+
+    .inventory-weight {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    /* Item Tooltip */
+    #item-tooltip {
+      position: fixed;
+      background: rgba(10, 10, 20, 0.95);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      max-width: 250px;
+      display: none;
+      pointer-events: none;
+      z-index: 300;
+    }
+
+    .tooltip-name {
+      font-weight: bold;
+      font-size: 14px;
+      color: #ffdd44;
+      margin-bottom: 4px;
+    }
+
+    .tooltip-type {
+      font-size: 11px;
+      opacity: 0.6;
+      margin-bottom: 6px;
+      text-transform: capitalize;
+    }
+
+    .tooltip-desc {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .tooltip-effects {
+      color: #88ff88;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .tooltip-weight {
+      font-size: 11px;
+      opacity: 0.5;
+    }
+
+    /* Context Menu */
+    .context-menu {
+      position: fixed;
+      background: rgba(20, 20, 30, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      padding: 4px 0;
+      display: none;
+      z-index: 400;
+      min-width: 120px;
+    }
+
+    .context-menu-item {
+      display: block;
+      width: 100%;
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .context-menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Crafting Panel */
+    #crafting-panel {
+      min-width: 350px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .crafting-recipe {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .recipe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .recipe-name {
+      font-weight: bold;
+      color: #ffdd44;
+    }
+
+    .recipe-time {
+      font-size: 11px;
+      opacity: 0.5;
+    }
+
+    .recipe-desc {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 8px;
+    }
+
+    .recipe-materials {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .craft-material {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .craft-material.has-enough {
+      color: #88ff88;
+    }
+
+    .craft-material.not-enough {
+      color: #ff6666;
+    }
+
+    .craft-button {
+      padding: 6px 16px;
+      background: rgba(68, 255, 68, 0.2);
+      border: 1px solid #44ff44;
+      border-radius: 4px;
+      color: #44ff44;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .craft-button:hover:not(:disabled) {
+      background: rgba(68, 255, 68, 0.3);
+    }
+
+    .craft-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: #666;
+      color: #888;
+    }
+
+    .craft-status {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 13px;
+      padding: 6px;
+      border-radius: 4px;
+    }
+
+    .craft-status.success {
+      color: #88ff88;
+      background: rgba(68, 255, 68, 0.1);
+    }
+
+    .craft-status.error {
+      color: #ff6666;
+      background: rgba(255, 68, 68, 0.1);
     }
   </style>
 </head>
@@ -160,6 +510,7 @@
   <canvas id="renderCanvas"></canvas>
 
   <div id="ui-overlay">
+    <!-- Stats Panel (top-left) -->
     <div class="stats-panel">
       <div class="stat-bar">
         <div class="stat-label">Health: <span id="health-value">100</span></div>
@@ -187,14 +538,61 @@
       </div>
     </div>
 
+    <!-- Environment HUD (top-center) -->
+    <div class="environment-panel">
+      <div class="env-item">
+        <span class="env-label">Time</span>
+        <span class="env-value" id="time-display">08:00 (day)</span>
+      </div>
+      <div class="env-item">
+        <span class="env-label">Temperature</span>
+        <span class="env-value" id="temp-display">Body: 37.0°C | Env: 0°C</span>
+      </div>
+      <div class="env-item">
+        <span class="env-label">Weather</span>
+        <span class="env-value" id="weather-display">Clear</span>
+      </div>
+    </div>
+
+    <!-- Controls Info (top-right) -->
     <div class="info-text">
       <strong>Controls:</strong><br>
       WASD - Move<br>
       Shift - Sprint<br>
-      Space - Jump<br>
-      E/F - Interact
+      E/F - Gather<br>
+      I/Tab - Inventory<br>
+      C - Crafting<br>
+      Esc - Close panels
     </div>
+
+    <!-- Interaction Prompt (bottom-center) -->
+    <div id="interaction-prompt"></div>
+
+    <!-- Gather Progress Bar -->
+    <div id="gather-progress">
+      <div id="gather-progress-fill"></div>
+    </div>
+
+    <!-- Gather Feedback -->
+    <div id="gather-feedback"></div>
   </div>
+
+  <!-- Inventory Panel -->
+  <div id="inventory-panel" class="game-panel">
+    <div class="panel-title">Inventory</div>
+    <div id="inventory-grid" class="inventory-grid"></div>
+    <div id="inventory-weight" class="inventory-weight">Weight: 0 / 100</div>
+  </div>
+
+  <!-- Crafting Panel -->
+  <div id="crafting-panel" class="game-panel">
+    <div class="panel-title">Crafting</div>
+    <div id="crafting-recipes"></div>
+    <div id="crafting-status"></div>
+  </div>
+
+  <!-- Item Tooltip -->
+  <div id="item-tooltip"></div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>

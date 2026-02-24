@@ -27,6 +27,48 @@ export const GAME_CONFIG = {
   BLIZZARD_TEMPERATURE: -30, // Celsius during blizzard
 } as const;
 
+/**
+ * Time configuration with normalized segment boundaries
+ * Normalized time: 0 = midnight, 0.5 = noon, 1 = next midnight
+ */
+export const TIME_CONFIG = {
+  SEGMENTS: {
+    DAWN_START: 0.25, // 6:00 AM
+    DAY_START: 0.333, // 8:00 AM
+    DUSK_START: 0.75, // 6:00 PM
+    NIGHT_START: 0.833, // 8:00 PM
+  },
+  TEMPERATURES: {
+    NIGHT: -15,
+    DAWN: -5,
+    DAY: 0,
+    DUSK: -5,
+  },
+} as const;
+
+/**
+ * Weather system configuration
+ */
+export const WEATHER_CONFIG = {
+  MIN_DURATION: 60, // Minimum seconds before weather change
+  MAX_DURATION: 180, // Maximum seconds before weather change
+  TRANSITION_DURATION: 30, // Seconds to transition between weather states
+  MODIFIERS: {
+    CLEAR: { temperature: 0, movement: 1.0, visibility: 1.0 },
+    CLOUDY: { temperature: -2, movement: 1.0, visibility: 0.9 },
+    SNOWING: { temperature: -5, movement: 0.85, visibility: 0.6 },
+    BLIZZARD: { temperature: -15, movement: 0.6, visibility: 0.3 },
+  },
+  // Transition weights: [CLEAR, CLOUDY, SNOWING, BLIZZARD]
+  TRANSITION_WEIGHTS: {
+    CLEAR: [0, 0.6, 0.3, 0.1],
+    CLOUDY: [0.3, 0, 0.5, 0.2],
+    SNOWING: [0.2, 0.3, 0, 0.5],
+    BLIZZARD: [0.3, 0.3, 0.4, 0],
+  },
+  NIGHT_BLIZZARD_BONUS: 0.15, // Extra probability for blizzard at night
+} as const;
+
 export const CHARACTER_STATS = {
   BASE_HEALTH: 100,
   BASE_HUNGER: 100,

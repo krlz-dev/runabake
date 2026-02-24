@@ -23,17 +23,19 @@ export interface IInputState {
 }
 
 /**
- * Manages keyboard and mouse input
- * Provides a clean interface for checking input state
+ * Manages keyboard and mouse input with edge detection.
+ * Provides wasKeyJustPressed() for toggle-style keys (C, I, Tab).
  */
 export class InputManager {
   private inputState: IInputState;
   private scene: Scene;
   private keyMap: Map<string, boolean>;
+  private previousKeyMap: Map<string, boolean>;
 
   constructor(scene: Scene) {
     this.scene = scene;
     this.keyMap = new Map();
+    this.previousKeyMap = new Map();
     this.inputState = {
       forward: false,
       backward: false,
@@ -113,64 +115,59 @@ export class InputManager {
   }
 
   /**
+   * Check if a key was just pressed this frame (rising edge detection).
+   * Returns true only on the frame the key goes from up to down.
+   */
+  wasKeyJustPressed(key: string): boolean {
+    const k = key.toLowerCase();
+    const current = this.keyMap.get(k) ?? false;
+    const previous = this.previousKeyMap.get(k) ?? false;
+    return current && !previous;
+  }
+
+  /**
+   * Copy current key state to previous state.
+   * Must be called at end of each frame after all input checks.
+   */
+  updatePreviousState(): void {
+    this.previousKeyMap = new Map(this.keyMap);
+  }
+
+  /**
    * Get current input state
    */
   getInputState(): Readonly<IInputState> {
     return { ...this.inputState };
   }
 
-  /**
-   * Check if forward movement is requested
-   */
   isMovingForward(): boolean {
     return this.inputState.forward;
   }
 
-  /**
-   * Check if backward movement is requested
-   */
   isMovingBackward(): boolean {
     return this.inputState.backward;
   }
 
-  /**
-   * Check if left movement is requested
-   */
   isMovingLeft(): boolean {
     return this.inputState.left;
   }
 
-  /**
-   * Check if right movement is requested
-   */
   isMovingRight(): boolean {
     return this.inputState.right;
   }
 
-  /**
-   * Check if jump is requested
-   */
   isJumping(): boolean {
     return this.inputState.jump;
   }
 
-  /**
-   * Check if sprint is requested
-   */
   isSprinting(): boolean {
     return this.inputState.sprint;
   }
 
-  /**
-   * Check if interact is requested
-   */
   isInteracting(): boolean {
     return this.inputState.interact;
   }
 
-  /**
-   * Check if any movement input is active
-   */
   isMoving(): boolean {
     return (
       this.inputState.forward ||
@@ -180,9 +177,6 @@ export class InputManager {
     );
   }
 
-  /**
-   * Get mouse position
-   */
   getMousePosition(): { x: number; y: number } {
     return {
       x: this.inputState.mouseX,
@@ -190,11 +184,9 @@ export class InputManager {
     };
   }
 
-  /**
-   * Reset all input states
-   */
   reset(): void {
     this.keyMap.clear();
+    this.previousKeyMap.clear();
     this.inputState = {
       forward: false,
       backward: false,
@@ -210,10 +202,8 @@ export class InputManager {
     };
   }
 
-  /**
-   * Clean up resources
-   */
   dispose(): void {
     this.keyMap.clear();
+    this.previousKeyMap.clear();
   }
 }
